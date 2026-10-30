@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>VoyageAI Navigator – Plan smarter trips with five AI agents</title>
+<style>
+:root{--bg1:#0b2e36;--bg2:#13555c;--ink:#f4efe3;--mute:#b9cfcf;--card:rgba(255,255,255,.09);--line:rgba(255,255,255,.22);--acc:#ffb347;--acc2:#4fd1c5;--btn:#ffb347;--btnink:#10262b;--in:rgba(0,0,0,.28)}
+[data-theme=light]{--bg1:#f6efe0;--bg2:#cfe8e4;--ink:#12303a;--mute:#3e5c63;--card:rgba(255,255,255,.62);--line:rgba(18,48,58,.25);--acc:#b45f06;--acc2:#0b7a75;--btn:#0b7a75;--btnink:#fff;--in:rgba(255,255,255,.8)}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.6 Georgia,"Times New Roman",serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;min-height:100vh}
+h1,h2,h3,button,label,.k{font-family:"Trebuchet MS",Verdana,sans-serif}
+a{color:var(--acc)}
+.skip{position:absolute;left:-999px;top:0;background:var(--btn);color:var(--btnink);padding:.6rem 1rem;z-index:9}.skip:focus{left:0}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.8rem 1.2rem;flex-wrap:wrap}
+.logo{font:700 1.2rem "Trebuchet MS",sans-serif}
+nav a{margin-right:1rem;text-decoration:none}
+main,footer{max-width:1100px;margin:auto;padding:0 1.2rem}
+section{padding:2.4rem 0}
+h2{font-size:1.7rem;margin:0 0 1rem}
+.hero{padding:3.5rem 0 2rem}
+.hero h1{font-size:clamp(2.2rem,7vw,4.4rem);line-height:1.05;margin:0 0 .8rem;letter-spacing:-.02em}
+.hero p{max-width:60ch;color:var(--mute);font-size:1.15rem}
+.btn{display:inline-block;border:0;border-radius:10px;padding:.75rem 1.3rem;background:var(--btn);color:var(--btnink);font-weight:700;font-size:1rem;cursor:pointer;text-decoration:none;margin:0 .6rem .6rem 0}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.glass{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.2rem;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.form{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));align-items:end}
+label{display:block;font-weight:700;margin-bottom:.3rem}
+input,select{width:100%;padding:.65rem;border-radius:10px;border:1px solid var(--line);background:var(--in);color:var(--ink);font-size:1rem}
+.err{color:#ff8a80;min-height:1.4rem;font-weight:700}
+[data-theme=light] .err{color:#b00020}
+.k{color:var(--mute);font-size:.85rem}
+.agent{border-left:5px solid var(--line);transition:border-color .3s}
+.agent.on{border-color:var(--acc)}.agent.done{border-color:var(--acc2)}
+.big{font:700 2.4rem "Trebuchet MS",sans-serif;color:var(--acc)}
+.bar{height:12px;border-radius:8px;background:var(--in);overflow:hidden;margin:.3rem 0 .8rem}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .9s}
+.donut{width:150px;height:150px;border-radius:50%;margin:auto}
+.donut::after{content:"";display:block;width:90px;height:90px;border-radius:50%;background:var(--bg1);position:relative;top:30px;left:30px}
+.chips span{display:inline-block;margin:0 .4rem .4rem 0;padding:.15rem .6rem;border:1px solid var(--line);border-radius:99px;font-size:.85rem}
+ol.days{padding-left:1.2rem}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:.5rem;text-align:left}
+.tw{overflow-x:auto}
+[hidden]{display:none!important}
+footer{padding:2rem 1.2rem;color:var(--mute)}
+@media print{header.top,.hero,.noprint,section:not(#results){display:none!important}body{background:#fff;color:#000}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#planner">Skip to trip planner</a>
+<header class="top">
+ <div class="logo">VoyageAI Navigator</div>
+ <nav aria-label="Main"><a href="#planner">Planner</a><a href="#agents">Agents</a><a href="#impact">Impact</a><a href="#hackathon">Hackathon</a><a href="#roadmap">Roadmap</a></nav>
+ <button class="btn ghost" id="theme" type="button" aria-pressed="false">Switch to light mode</button>
+</header>
+<main id="main">
+<section class="hero" aria-labelledby="h1">
+ <h1 id="h1">Five AI agents plan your trip. You approve it.</h1>
+ <p>VoyageAI Navigator matches destinations to your style, prices the trip, checks safety, estimates carbon and orders each day's stops – all in your browser, with no sign-up and no data leaving your device.</p>
+ <a class="btn" href="#planner">Plan my trip</a><a class="btn ghost" href="#agents">Meet the agents</a>
+</section>
+
+<section id="planner" aria-labelledby="h-plan">
+ <h2 id="h-plan">AI trip planner</h2>
+ <form class="glass" id="form" novalidate>
+  <div class="form">
+   <div><label for="dest">Destination (optional)</label><input id="dest" list="dl" maxlength="40" autocomplete="off" placeholder="Leave blank for AI picks"><datalist id="dl"></datalist></div>
+   <div><label for="budget">Total budget (USD)</label><input id="budget" type="number" min="100" max="100000" value="1500" inputmode="numeric"></div>
+   <div><label for="days">Days: <output id="dv">5</output></label><input id="days" type="range" min="1" max="14" value="5"></div>
+   <div><label for="style">Travel style</label><select id="style"></select></div>
+  </div>
+  <p class="err" id="err" role="alert"></p>
+  <button class="btn" type="submit">Generate plan</button>
+  <button class="btn ghost" type="button" id="saved">Show saved trips</button>
+ </form>
+
+ <div id="collab" class="grid" style="margin-top:1rem" aria-live="polite"></div>
+</section>
+
+<section id="results" hidden aria-labelledby="h-res" aria-live="polite">
+ <h2 id="h-res">Your plan</h2>
+ <div class="grid">
+  <div class="glass"><div class="k">Trip score</div><div class="big" id="score">0</div><div class="bar"><i id="scorebar"></i></div><p id="summary"></p></div>
+  <div class="glass"><div class="k">Cost breakdown</div><div class="donut" id="donut" role="img" aria-label="Cost breakdown chart"></div><div class="chips" id="legend" style="margin-top:.8rem"></div></div>
+  <div class="glass"><div class="k">Risk level</div><div class="big" id="risk"></div><p id="riskTxt"></p><div class="k">Carbon estimate</div><div class="big" id="co2"></div><p id="eco"></p></div>
+ </div>
+ <div class="glass" style="margin-top:1rem"><h3>Smart itinerary</h3><ol class="days" id="itin"></ol></div>
+ <div class="glass" style="margin-top:1rem"><h3>Other matches</h3><div class="tw"><table><thead><tr><th>Destination</th><th>Match</th><th>Est. cost</th><th>Safety</th></tr></thead><tbody id="alts"></tbody></table></div></div>
+ <p class="noprint"><button class="btn" id="save" type="button">Save trip</button><button class="btn ghost" id="print" type="button">Print</button><button class="btn ghost" id="json" type="button">Download JSON</button><span id="msg" class="k" role="status"></span></p>
+</section>
+
+<section id="agents" aria-labelledby="h-ag">
+ <h2 id="h-ag">The five agents</h2>
+ <div class="grid">
+  <article class="glass"><h3>1. Destination Research</h3><p>Scores 20 destinations on style, budget fit and safety.</p></article>
+  <article class="glass"><h3>2. Budget Planning</h3><p>Forecasts total cost and splits it into stay, food, transport, activities and buffer.</p></article>
+  <article class="glass"><h3>3. Travel Safety</h3><p>Turns safety data into a risk level with alerts.</p></article>
+  <article class="glass"><h3>4. Sustainability</h3><p>Estimates carbon and gives an eco rating with tips.</p></article>
+  <article class="glass"><h3>5. Route Optimisation</h3><p>Groups stops by area so days avoid backtracking.</p></article>
+ </div>
+ <p class="k">Capabilities: destination matching, real-time planning, cost forecasting, smart suggestions, trip scoring, risk alerts, travel insights.</p>
+</section>
+
+<section id="impact" aria-labelledby="h-imp">
+ <h2 id="h-imp">Potential impact</h2>
+ <div class="grid">
+  <div class="glass"><div class="k">Planning time saved</div><div class="big" data-n="80" data-s="%">0</div><div class="bar"><i data-w="80"></i></div></div>
+  <div class="glass"><div class="k">Budget overruns avoided</div><div class="big" data-n="35" data-s="%">0</div><div class="bar"><i data-w="35"></i></div></div>
+  <div class="glass"><div class="k">Lower-carbon choices</div><div class="big" data-n="25" data-s="%">0</div><div class="bar"><i data-w="25"></i></div></div>
+  <div class="glass"><div class="k">Trips planned on this device</div><div class="big" id="trips">0</div></div>
+ </div>
+ <div class="grid" style="margin-top:1rem">
+  <div class="glass"><h3>The problem</h3><p>Travellers drown in tabs, guess their budget, skip safety checks and rarely see the carbon cost of a trip.</p></div>
+  <div class="glass"><h3>The solution</h3><p>One planner where specialist agents work together and explain each decision in plain language.</p></div>
+ </div>
+</section>
+
+<section id="hackathon" aria-labelledby="h-hk">
+ <h2 id="h-hk">Hackathon alignment</h2>
+ <div class="glass tw"><table><thead><tr><th>Criterion</th><th>How VoyageAI answers it</th></tr></thead><tbody>
+ <tr><td>Potential impact</td><td>Saves planning time, prevents overspend, lowers travel emissions.</td></tr>
+ <tr><td>Technical feasibility</td><td>Runs on plain HTML, CSS and JavaScript with no backend.</td></tr>
+ <tr><td>Innovation</td><td>Five cooperating agents with a visible reasoning trail.</td></tr>
+ <tr><td>Adoption</td><td>Free, installs nothing, works offline after loading, GitHub Pages ready.</td></tr>
+ <tr><td>Accessibility and security</td><td>WCAG 2.1 AA patterns, input validation, strict CSP, no innerHTML.</td></tr></tbody></table></div>
+</section>
+
+<section id="roadmap" aria-labelledby="h-rm">
+ <h2 id="h-rm">Future roadmap</h2>
+ <div class="grid">
+  <div class="glass"><h3>Next</h3><p>Live LLM agents, live flight and weather data, multi-city routes.</p></div>
+  <div class="glass"><h3>Later</h3><p>Group trips with shared budgets, partner booking links, offline PWA.</p></div>
+  <div class="glass"><h3>Vision</h3><p>Carbon-aware travel advice for every traveller.</p></div>
+ </div>
+</section>
+</main>
+<footer><p>VoyageAI Navigator – built for VOYAGEHACK 4.0. Estimates are indicative and not professional travel advice. Your data stays in this browser.</p></footer>
+
+<script>
+(function(){
+"use strict";
+// name, USD/day, safety 1-10, round-trip CO2 kg per traveller, styles, stops [name, zone]
+var D=[
+["Lisbon, Portugal",95,8.5,900,["Culture","Relaxation","Budget"],[["Alfama old town",1],["Belem Tower",2],["Sintra day trip",3],["LX Factory",2],["Tram 28 ride",1]]],
+["Kyoto, Japan",150,9.3,2300,["Culture","Family","Eco"],[["Fushimi Inari",1],["Arashiyama bamboo grove",2],["Nishiki Market",1],["Kinkaku-ji",3],["Gion evening walk",1]]],
+["Bali, Indonesia",70,7.6,2100,["Relaxation","Adventure","Budget","Eco"],[["Ubud rice terraces",1],["Tegallalang swing",1],["Uluwatu temple",2],["Mount Batur sunrise",3],["Seminyak beach",2]]],
+["Reykjavik, Iceland",230,9.6,1500,["Adventure","Eco","Luxury"],[["Golden Circle",2],["Blue Lagoon",3],["Hallgrimskirkja",1],["Glacier hike",3],["Harbour whale watch",1]]],
+["Bangkok, Thailand",60,7.4,1900,["Budget","Culture","Adventure"],[["Grand Palace",1],["Chatuchak market",2],["Chao Phraya boat",1],["Ayutthaya day trip",3],["Street food tour",2]]],
+["Marrakech, Morocco",75,7.0,1200,["Culture","Budget","Adventure"],[["Jemaa el-Fnaa",1],["Majorelle Garden",2],["Atlas foothills",3],["Medina souks",1],["Hammam spa",2]]],
+["Cape Town, South Africa",85,6.2,3400,["Adventure","Family","Luxury"],[["Table Mountain",1],["Cape Point",3],["Boulders penguins",3],["V&A Waterfront",2],["Winelands tasting",2]]],
+["Queenstown, New Zealand",180,9.0,4200,["Adventure","Eco","Family"],[["Skyline gondola",1],["Milford Sound",3],["Lake Wakatipu cruise",1],["Arrowtown",2],["Hiking Ben Lomond",1]]],
+["Santorini, Greece",190,8.4,1100,["Relaxation","Luxury","Culture"],[["Oia sunset",1],["Fira cliff walk",2],["Red Beach",3],["Akrotiri ruins",3],["Wine tour",2]]],
+["Costa Rica",110,7.8,1900,["Eco","Adventure","Family"],[["Arenal volcano",1],["Monteverde cloud forest",2],["Manuel Antonio park",3],["Zip-lining",2],["Hot springs",1]]],
+["Prague, Czechia",85,8.8,800,["Culture","Budget","Family"],[["Old Town Square",1],["Prague Castle",2],["Charles Bridge",1],["Vltava cruise",1],["Kutna Hora day trip",3]]],
+["Dubai, UAE",210,9.1,1300,["Luxury","Family","Relaxation"],[["Burj Khalifa",1],["Desert safari",3],["Dubai Mall",1],["Old Dubai souks",2],["Palm beach club",2]]],
+["Hanoi, Vietnam",55,8.0,2000,["Budget","Culture","Adventure"],[["Old Quarter",1],["Hoan Kiem Lake",1],["Ha Long Bay cruise",3],["Water puppet show",1],["Egg coffee crawl",1]]],
+["Rome, Italy",140,8.2,1000,["Culture","Family","Luxury"],[["Colosseum",1],["Vatican Museums",2],["Trevi Fountain",1],["Trastevere dinner",2],["Appian Way bikes",3]]],
+["Banff, Canada",160,9.2,2900,["Adventure","Eco","Family"],[["Lake Louise",1],["Moraine Lake",1],["Banff Gondola",2],["Johnston Canyon",2],["Icefields Parkway",3]]],
+["Goa, India",60,7.5,300,["Relaxation","Budget","Culture"],[["Palolem beach",3],["Old Goa churches",1],["Fontainhas walk",1],["Spice plantation",2],["Anjuna flea market",2]]],
+["Jaipur, India",55,7.3,350,["Culture","Budget","Family"],[["Amber Fort",1],["City Palace",2],["Hawa Mahal",2],["Nahargarh sunset",1],["Bapu Bazaar",2]]],
+["Sydney, Australia",200,9.0,3800,["Family","Luxury","Relaxation"],[["Opera House",1],["Bondi to Coogee walk",2],["Taronga Zoo",1],["Blue Mountains",3],["Manly ferry",1]]],
+["Copenhagen, Denmark",190,9.5,900,["Eco","Culture","Luxury"],[["Nyhavn",1],["Tivoli Gardens",1],["Bike the harbour",2],["Louisiana Museum",3],["Christiania",2]]],
+["Peru – Cusco",80,6.9,3600,["Adventure","Culture","Budget"],[["Plaza de Armas",1],["Sacred Valley",2],["Machu Picchu",3],["Rainbow Mountain",3],["San Pedro market",1]]]
+];
+var STYLES=["Adventure","Relaxation","Culture","Family","Budget","Luxury","Eco"];
+var SPLIT=[["Stay",.40,"#4fd1c5"],["Food",.25,"#ffb347"],["Transport",.15,"#9f7aea"],["Activities",.15,"#f56565"],["Buffer",.05,"#a0aec0"]];
+var $=function(i){return document.getElementById(i)};
+function el(t,txt,cls){var e=document.createElement(t);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e}
+function clean(s){return String(s||"").replace(/[<>"'`&]/g,"").trim().slice(0,40)}
+function store(get,val){try{if(get)return JSON.parse(localStorage.getItem("voyageai")||"[]");localStorage.setItem("voyageai",JSON.stringify(val))}catch(e){return get?[]:null}}
+var last=null;
+
+// init
+D.forEach(function(d){var o=document.createElement("option");o.value=d[0];$("dl").appendChild(o)});
+STYLES.forEach(function(s){var o=document.createElement("option");o.value=o.textContent=s;$("style").appendChild(o)});
+$("days").addEventListener("input",function(){$("dv").textContent=this.value});
+$("theme").addEventListener("click",function(){var h=document.documentElement,l=h.dataset.theme==="dark";h.dataset.theme=l?"light":"dark";this.textContent=l?"Switch to dark mode":"Switch to light mode";this.setAttribute("aria-pressed",String(l))});
+function trips(){$("trips").textContent=store(true).length}
+trips();
+// animated counters (respect reduced motion)
+var calm=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+document.querySelectorAll("[data-n]").forEach(function(n){var t=+n.dataset.n,s=n.dataset.s||"",c=0;if(calm){n.textContent=t+s;return}var iv=setInterval(function(){c+=Math.ceil(t/30);if(c>=t){c=t;clearInterval(iv)}n.textContent=c+s},30)});
+document.querySelectorAll("[data-w]").forEach(function(b){setTimeout(function(){b.style.width=b.dataset.w+"%"},200)});
+
+// agents
+function research(style,budget,days,pick){
+ return D.map(function(d){
+  var sm=d[4].indexOf(style)>-1?1:.25, cost=d[1]*days, bf=Math.max(0,Math.min(1,1.25-cost/budget)), m=Math.round((sm*50+bf*30+d[2]*2)*10)/10;
+  if(pick&&d[0]===pick)m=Math.max(m,60);
+  return {d:d,match:Math.min(100,Math.round(m)),cost:cost};
+ }).sort(function(a,b){return b.match-a.match});
+}
+function budgetAgent(d,days,budget){var t=d[1]*days;return{total:t,fit:t<=budget,gap:Math.abs(budget-t),parts:SPLIT.map(function(s){return[s[0],Math.round(t*s[1]),s[2]]})}}
+function safetyAgent(d){var s=d[2];return s>=8.5?{lvl:"Low",txt:"Well rated for visitors. Keep normal precautions."}:s>=7?{lvl:"Medium",txt:"Generally fine. Watch for petty theft and scams, and check local advisories."}:{lvl:"Elevated",txt:"Check your government's travel advice, buy insurance and avoid isolated areas at night."}}
+function ecoAgent(d,style){var c=d[3],r=c<1200?"A":c<2400?"B":"C",tips=["Choose direct flights where possible","Stay in locally owned lodging","Use trains, buses or bikes on the ground"];if(style==="Eco")tips.push("Offset or reduce flights by extending your stay");return{kg:c,rating:r,tips:tips}}
+function routeAgent(d,days){var s=d[5].slice().sort(function(a,b){return a[1]-b[1]}),out=[],per=Math.max(1,Math.ceil(s.length/Math.min(days,s.length))),i;for(i=0;i<days;i++){var chunk=s.slice(i*per,i*per+per);out.push(chunk.length?chunk.map(function(x){return x[0]}):["Free day: revisit a favourite or rest"])}return out}
+
+$("form").addEventListener("submit",function(e){
+ e.preventDefault();
+ var dest=clean($("dest").value),budget=+$("budget").value,days=+$("days").value,style=$("style").value,err=$("err");
+ err.textContent="";
+ if(!isFinite(budget)||budget<100||budget>100000){err.textContent="Enter a budget between 100 and 100,000 USD.";$("budget").focus();return}
+ if(STYLES.indexOf(style)<0){err.textContent="Choose a travel style from the list.";return}
+ var picked=D.filter(function(d){return d[0].toLowerCase()===dest.toLowerCase()})[0];
+ if(dest&&!picked){err.textContent="That destination is not in the list yet. Pick one from the suggestions or leave the box empty.";$("dest").focus();return}
+ runAgents({dest:picked?picked[0]:null,budget:budget,days:days,style:style});
+});
+
+function runAgents(inp){
+ var box=$("collab");box.textContent="";
+ var names=["Destination Research","Budget Planning","Travel Safety","Sustainability","Route Optimisation"],cards=names.map(function(n){var c=el("div",null,"glass agent");c.appendChild(el("strong",n));c.appendChild(el("p","Waiting…","k"));box.appendChild(c);return c});
+ var ranked=research(inp.style,inp.budget,inp.days,inp.dest),top=inp.dest?ranked.filter(function(r){return r.d[0]===inp.dest})[0]:ranked[0],d=top.d;
+ var B=budgetAgent(d,inp.days,inp.budget),S=safetyAgent(d),E=ecoAgent(d,inp.style),R=routeAgent(d,inp.days);
+ var notes=["Best match: "+d[0]+" ("+top.match+"/100)","Forecast $"+B.total+" vs budget $"+inp.budget+(B.fit?" – within budget":" – over by $"+(B.total-inp.budget)),"Risk level: "+S.lvl,"Eco rating "+E.rating+", about "+E.kg+" kg CO2","Grouped "+d[5].length+" stops by area across "+inp.days+" days"];
+ var i=0;
+ (function step(){
+  if(i>0){cards[i-1].className="glass agent done"}
+  if(i>=5){finish();return}
+  cards[i].className="glass agent on";cards[i].lastChild.textContent=notes[i];i++;
+  setTimeout(step,calm?0:450);
+ })();
+ function finish(){
+  var sc=Math.round(top.match*.35+(B.fit?100:Math.max(30,100-B.gap/inp.budget*100))*.25+d[2]*10*.2+(E.rating==="A"?100:E.rating==="B"?75:50)*.2);
+  last={destination:d[0],days:inp.days,budget:inp.budget,style:inp.style,score:sc,total:B.total,risk:S.lvl,co2:E.kg,itinerary:R,created:new Date().toISOString().slice(0,10)};
+  $("results").hidden=false;
+  $("score").textContent=sc+"/100";$("scorebar").style.width=sc+"%";
+  $("summary").textContent=d[0]+" for "+inp.days+" days, "+inp.style+" style. "+(B.fit?"Fits your budget with $"+(inp.budget-B.total)+" to spare.":"Needs about $"+(B.total-inp.budget)+" more, or try fewer days.");
+  var g=0,stops=[];B.parts.forEach(function(p){var a=g;g+=p[1]/B.total*100;stops.push(p[2]+" "+a+"% "+g+"%")});
+  $("donut").style.background="conic-gradient("+stops.join(",")+")";
+  $("donut").setAttribute("aria-label","Cost breakdown: "+B.parts.map(function(p){return p[0]+" $"+p[1]}).join(", "));
+  var lg=$("legend");lg.textContent="";B.parts.forEach(function(p){lg.appendChild(el("span",p[0]+" $"+p[1]))});
+  $("risk").textContent=S.lvl;$("riskTxt").textContent=S.txt;
+  $("co2").textContent=E.kg+" kg CO2";$("eco").textContent="Rating "+E.rating+". Tips: "+E.tips.join("; ")+".";
+  var it=$("itin");it.textContent="";R.forEach(function(day){it.appendChild(el("li",day.join(" → ")))});
+  var tb=$("alts");tb.textContent="";ranked.filter(function(r){return r.d[0]!==d[0]}).slice(0,3).forEach(function(r){var tr=document.createElement("tr");[r.d[0],r.match+"/100","$"+r.cost,r.d[2]+"/10"].forEach(function(v){tr.appendChild(el("td",v))});tb.appendChild(tr)});
+  $("results").scrollIntoView({behavior:calm?"auto":"smooth"});$("h-res").setAttribute("tabindex","-1");$("h-res").focus();
+ }
+}
+$("save").addEventListener("click",function(){if(!last)return;var a=store(true);a.push(last);store(false,a.slice(-20));trips();$("msg").textContent=" Trip saved."});
+$("print").addEventListener("click",function(){window.print()});
+$("json").addEventListener("click",function(){if(!last)return;var u=URL.createObjectURL(new Blob([JSON.stringify(last,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=u;a.download="voyageai-trip.json";a.click();URL.revokeObjectURL(u)});
+$("saved").addEventListener("click",function(){var a=store(true);$("err").textContent=a.length?"Saved trips: "+a.map(function(t){return clean(t.destination)+" ("+(+t.days||0)+"d, score "+(+t.score||0)+")"}).join("; "):"No saved trips yet. Generate a plan and choose Save trip."});
+})();
+</script>
+</body>
+</html>
